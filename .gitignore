@@ -1,1 +1,4 @@
 Servicekey/react-notification.json
+
+# Ignore .env file
+.env

@@ -22,13 +22,7 @@ app.use(cors({
 
 
 
-// mongoose.connect("mongodb+srv://swarnimdhawane:BO1jtuSydBbUKw9B@push-notification.frfuajh.mongodb.net/?retryWrites=true&w=majority&appName=push-notification")
 
-// const db = mongoose.connection;
-// db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-// db.once('open', () => {
-//     console.log('Connected to MongoDB');
-//   });
 
 // Route to create a new user
 app.post('/users', async (req, res) => {
@@ -69,7 +63,6 @@ app.post('/events', async (req, res) => {
 
 
 const serviceAccount = require('./Servicekey/react-notification.json'); // Replace with your service account key file
-// const serviceAccount = process.env.FIREBASE_SERVICE_KEY;
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });

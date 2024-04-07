@@ -1,9 +1,10 @@
 const mongoose = require("mongoose")
+// Load environment variables from .env file
+require('dotenv').config();
 
 const connectDB = async () => {
     try {
-      await mongoose.connect("mongodb+srv://swarnimdhawane:BO1jtuSydBbUKw9B@push-notification.frfuajh.mongodb.net/?retryWrites=true&w=majority&appName=push-notification", {
-
+      mongoose.connect(process.env.MONGODB_URI, {
       });
       console.log('Connected to MongoDB');
     } catch (error) {
