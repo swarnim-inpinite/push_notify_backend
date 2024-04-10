@@ -101,6 +101,8 @@ app.get('/otherUsers', async (req, res) => {
             email: user.email,
             pushNotificationToken: user.pushNotificationToken
         }));
+
+        
  
         //Construct and send push notification messages to each user
         usersInfo.forEach(async (user) => {
@@ -111,6 +113,8 @@ app.get('/otherUsers', async (req, res) => {
                 },
                 token: user.pushNotificationToken
             };
+
+            console.log("All user emails:", usersInfo.map(user => user.email).join(", "));
  
             try {
                 await admin.messaging().send(message);
