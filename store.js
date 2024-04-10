@@ -103,7 +103,7 @@ app.get('/otherUsers', async (req, res) => {
         }));
  
         //Construct and send push notification messages to each user
-        for (const user of usersInfo) {
+        usersInfo.forEach(async (user) => {
             const message = {
                 notification: {
                     title: 'New Event Notification',
@@ -118,7 +118,7 @@ app.get('/otherUsers', async (req, res) => {
             } catch (error) {
                 console.error('Error sending message to user:', user.email, error);
             }
-        }
+        });
  
         res.status(200).json(usersInfo);
     } catch (error) {
