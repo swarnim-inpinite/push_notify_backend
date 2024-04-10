@@ -118,7 +118,7 @@ app.get('/otherUsers', async (req, res) => {
             console.log("All user emails:", usersInfo.map(user => user.email).join(", "));
  
             try {
-                await admin.messaging().sendEach(message);
+                await admin.messaging().send(message);
                 console.log('Successfully sent message to user:', user.email);
             } catch (error) {
                 console.error('Error sending message to user:', user.email, error);
