@@ -92,16 +92,16 @@ app.get('/otherUsers', async (req, res) => {
         // Get the current user's UID from the request parameters
         const currentUserUID = req.query.currentUserUID;
         console.log("Current user id is", currentUserUID)
-
+ 
         // Find all users except the current user
         const otherUsers = await User.find({ uid: { $ne: currentUserUID } });
-
+ 
         // Extract the relevant information for each user
         const usersInfo = otherUsers.map(user => ({
             email: user.email,
             pushNotificationToken: user.pushNotificationToken
         }));
-
+ 
         //Construct and send push notification messages to each user
         for (const user of usersInfo) {
             const message = {
@@ -111,7 +111,7 @@ app.get('/otherUsers', async (req, res) => {
                 },
                 token: user.pushNotificationToken
             };
-
+ 
             try {
                 await admin.messaging().send(message);
                 console.log('Successfully sent message to user:', user.email);
@@ -119,7 +119,7 @@ app.get('/otherUsers', async (req, res) => {
                 console.error('Error sending message to user:', user.email, error);
             }
         }
-
+ 
         res.status(200).json(usersInfo);
     } catch (error) {
         res.status(500).json({ error: error.message });
