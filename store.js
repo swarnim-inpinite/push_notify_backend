@@ -95,6 +95,7 @@ app.get('/otherUsers', async (req, res) => {
  
         // Find all users except the current user
         const otherUsers = await User.find({ uid: { $ne: currentUserUID } });
+        console.log("other users are", otherUsers);
  
         // Extract the relevant information for each user
         const usersInfo = otherUsers.map(user => ({
