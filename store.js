@@ -113,7 +113,7 @@ app.get('/otherUsers', async (req, res) => {
             };
 
             try {
-                await admin.messaging().send(message.body);
+                await admin.messaging().send(message);
                 console.log('Successfully sent message to user:', user.email);
             } catch (error) {
                 console.error('Error sending message to user:', user.email, error);
