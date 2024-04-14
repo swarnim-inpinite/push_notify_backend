@@ -17,13 +17,14 @@ require('dotenv').config();
 
 
 // Allow requests from your Vercel-hosted frontend
-app.use(cors({
-    origin: 'https://push-notify-frontend.vercel.app',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}));
+// app.use(cors({
+//     // origin: 'https://push-notify-frontend.vercel.app',
+//     origin: 'http://localhost:3001',
+//     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }));
 
 
-
+app.use(cors()); 
 
 
 
@@ -45,18 +46,43 @@ app.post('/users', async (req, res) => {
 // Route to create a new event
 app.post('/events', async (req, res) => {
     try {
-        const { date, description } = req.body;
-        const event = new Event({ date, description });
+        const { date, description, userId } = req.body;
+        const event = new Event({ date, description, userId });
         await event.save();
 
-        // Fetch all users from the database
-        const users = await User.find();
-        //console.log("users are", users);
+        
+        console.log("Current user id is", userId);
 
+        const otherUsers = await User.find({ uid: { $ne: userId } });
+        //console.log("other users except current user", otherUsers);
 
-        // Extract push notification tokens from users
-        const pushNotificationTokens = users.map(user => user.pushNotificationToken);
-        console.log("Tokens are", pushNotificationTokens);
+     
+        // Project only email and pushNotificationToken fields
+        const usersInfo = otherUsers.map(user => ({
+        email: user.email,
+        pushNotificationToken: user.pushNotificationToken   
+    }));
+
+        console.log("Other users in events are:", usersInfo);
+
+        // Construct and send push notification messages to each user
+        usersInfo.forEach(async (user) => {
+        const message = {
+            notification: {
+                title: 'New Event Notification',
+                body: 'A new event has been added!'
+            },
+            token: user.pushNotificationToken
+        };
+
+        try {
+            await admin.messaging().send(message);
+            console.log('Successfully sent message to user:', user.email);
+        } catch (error) {
+            console.error('Error sending message to user:', user.email, error);
+        }
+    });
+
 
         res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
@@ -83,58 +109,6 @@ const serviceAccount = {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
-
-
-
-// Route to get other users and their push notification tokens
-app.get('/otherUsers', async (req, res) => {
-    try {
-        // Get the current user's UID from the request parameters
-        const currentUserUID = req.query.currentUserUID;
-        console.log("Current user id is", currentUserUID)
- 
-        // Find all users except the current user
-        const otherUsers = await User.find({ uid: { $ne: currentUserUID } });
-        console.log("other users are", otherUsers);
- 
-        // Extract the relevant information for each user
-        const usersInfo = otherUsers.map(user => ({
-            email: user.email,
-            pushNotificationToken: user.pushNotificationToken
-        }));
-
-        
- 
-        //Construct and send push notification messages to each user
-        usersInfo.forEach(async (user) => {
-            const message = {
-                notification: {
-                    title: 'New Event Notification',
-                    body: 'A new event has been added!'
-                },
-                token: user.pushNotificationToken
-            };
-
-            console.log("All user emails:", usersInfo.map(user => user.email).join(", "));
- 
-            try {
-                await admin.messaging().send(message);
-                console.log('Successfully sent message to user:', user.email);
-            } catch (error) {
-                console.error('Error sending message to user:', user.email, error);
-            }
-        });
- 
-        res.status(200).json(usersInfo);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-
-
-
-
 
 
 
