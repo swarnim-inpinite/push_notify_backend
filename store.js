@@ -23,7 +23,6 @@ require('dotenv').config();
 //     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 // }));
 
-
 app.use(cors()); 
 
 
@@ -50,7 +49,6 @@ app.post('/events', async (req, res) => {
         const event = new Event({ date, description, userId });
         await event.save();
 
-        
         console.log("Current user id is", userId);
 
         const otherUsers = await User.find({ uid: { $ne: userId } });
@@ -68,7 +66,7 @@ app.post('/events', async (req, res) => {
         // Construct and send push notification messages to each user
         usersInfo.forEach(async (user) => {
         const message = {
-            notification: {
+            data: {
                 title: 'New Event Notification',
                 body: 'A new event has been added!'
             },
