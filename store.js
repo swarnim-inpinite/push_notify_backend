@@ -52,41 +52,47 @@ app.post('/events', async (req, res) => {
         console.log("Current user id is", userId);
 
         const otherUsers = await User.find({ uid: { $ne: userId } });
-        //console.log("other users except current user", otherUsers);
-
      
         // Project only email and pushNotificationToken fields
         const usersInfo = otherUsers.map(user => ({
-        email: user.email,
-        pushNotificationToken: user.pushNotificationToken   
-    }));
+            email: user.email,
+            pushNotificationToken: user.pushNotificationToken   
+        }));
 
         console.log("Other users in events are:", usersInfo);
 
         // Construct and send push notification messages to each user
-        usersInfo.forEach(async (user) => {
-        const message = {
-            data: {
-                title: 'New Event Notification',
-                body: 'A new event has been added!'
-            },
-            token: user.pushNotificationToken
-        };
+        usersInfo.forEach(async (userInfo) => {
+            const userToken = userInfo.pushNotificationToken;
+            console.log("User token in store is", userToken);
 
-        try {
-            await admin.messaging().send(message);
-            console.log('Successfully sent message to user:', user.email);
-        } catch (error) {
-            console.error('Error sending message to user:', user.email, error);
-        }
-    });
+            if (!userToken) {
+                console.error('Error: FCM token is missing for user:', userInfo.email);
+                return;
+            }
 
+            const message = {
+                notification: {
+                    title: 'New Event Notification',
+                    body: 'A new event has been added!'
+                },
+                token: userToken
+            };
+
+            try {
+                await admin.messaging().send(message);
+                console.log('Successfully sent message to user:', userInfo.email);
+            } catch (error) {
+                console.error('Error sending message to user:', userInfo.email, error);
+            }
+        });
 
         res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 
 
