@@ -72,7 +72,7 @@ app.post('/events', async (req, res) => {
         };
 
         try {
-            const response = await admin.messaging().sendMulticast(message);
+            const response = await admin.messaging().sendEach(message);
             console.log('Successfully sent message:', response.successCount, 'users were reached.');
             
             response.responses.forEach((resp, idx) => {
