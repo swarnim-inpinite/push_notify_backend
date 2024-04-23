@@ -71,17 +71,16 @@ app.post('/events', async (req, res) => {
                 return;
             }
 
-            await admin.messaging().send({
-                notification: {
+            const message = {
+                data: {
                     title: 'New Event Notification',
                     body: 'A new event has been added!'
                 },
-                tokens: tokens
-            });
-            
+                token: userToken
+            };
 
             try {
-                // await admin.messaging().send(message);
+                await admin.messaging().send(message);
                 console.log('Successfully sent message to user:', userInfo);
             } catch (error) {
                 console.error('Error sending message to user:', userInfo.email, error);
