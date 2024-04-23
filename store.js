@@ -61,38 +61,37 @@ app.post('/events', async (req, res) => {
 
         console.log("Other users in events are:", usersInfo);
 
-        const tokens = usersInfo.filter(userInfo => userInfo.pushNotificationToken).map(userInfo => userInfo.pushNotificationToken);
+        // Construct and send push notification messages to each user
+        usersInfo.forEach(async (userInfo) => {
+            const userToken = userInfo.pushNotificationToken;
+            console.log("User token in store is", userToken);
 
-        const message = {
-            notification: {
-                title: 'New Event Notification',
-                body: 'A new event has been added!'
-            },
-            tokens: tokens
-        };
+            if (!userToken) {
+                console.error('Error: FCM token is missing for user:', userInfo.email);
+                return;
+            }
 
-        try {
-            const response = await admin.messaging().sendEach(message);
-            console.log('Successfully sent message:', response.successCount, 'users were reached.');
-            
-            response.responses.forEach((resp, idx) => {
-                if (!resp.success) {
-                    console.error('Error sending message to user:', tokens[idx], resp.error);
-                } else {
-                    console.log('Successfully sent message to user:', tokens[idx]);
-                }
-            });
-        } catch (error) {
-            console.error('Error sending multicast message:', error);
-        }
+            const message = {
+                notification: {
+                    title: 'New Event Notification',
+                    body: 'A new event has been added!'
+                },
+                token: userToken
+            };
+
+            try {
+                await admin.messaging().send(message);
+                console.log('Successfully sent message to user:', userInfo.email);
+            } catch (error) {
+                console.error('Error sending message to user:', userInfo.email, error);
+            }
+        });
 
         res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
-
-
     
 
 
