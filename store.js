@@ -15,6 +15,9 @@ connectDB();
 
 require('dotenv').config();
 
+const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID;
+const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
+
 
 // Allow requests from your Vercel-hosted frontend
 // app.use(cors({
@@ -61,32 +64,28 @@ app.post('/events', async (req, res) => {
 
         console.log("Other users in events are:", usersInfo);
 
-        // Construct and send push notification messages to each user
-        usersInfo.forEach(async (userInfo) => {
-            const userToken = userInfo.pushNotificationToken;
-            console.log("User token in store is", userToken);
+        const tokens = usersInfo.filter(userInfo => userInfo.pushNotificationToken).map(userInfo => userInfo.pushNotificationToken);
 
-            if (!userToken) {
-                console.error('Error: FCM token is missing for user:', userInfo.email);
-                return;
-            }
+        const message = {
+            app_id: ONESIGNAL_APP_ID,
+            contents: { en: 'A new event has been added!' },
+            headings: { en: 'New Event Notification' },
+            include_player_ids: tokens
+        };
 
-            const message = {
-                notification: {
-                    title: 'New Event Notification',
-                    body: 'A new event has been added!'
-                },
-                token: userToken
-            };
+        try {
+            const response = await axios.post('https://onesignal.com/api/v1/notifications', message, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${ONESIGNAL_REST_API_KEY}`
+                }
+            });
 
-            try {
-                await admin.messaging().send(message);
-                console.log('Successfully sent message to user:', userInfo.email);
-            } catch (error) {
-                console.error('Error sending message to user:', userInfo.email, error);
-            }
-        });
-
+            console.log('Successfully sent message:', response.data.id);
+        } catch (error) {
+            console.error('Error sending message:', error.response.data.errors);
+        }
+        
         res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
         res.status(500).json({ error: error.message });
