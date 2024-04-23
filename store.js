@@ -62,13 +62,13 @@ app.post('/events', async (req, res) => {
         console.log("Other users in events are:", usersInfo);
 
         // Construct and send push notification messages to each user
-        usersInfo.forEach(async (userInfo) => {
+        for (const userInfo of usersInfo) {
             const userToken = userInfo.pushNotificationToken;
             console.log("User token in store is", userToken);
 
             if (!userToken) {
                 console.error('Error: FCM token is missing for user:', userInfo.email);
-                return;
+                continue;
             }
 
             const message = {
@@ -85,7 +85,7 @@ app.post('/events', async (req, res) => {
             } catch (error) {
                 console.error('Error sending message to user:', userInfo.email, error);
             }
-        });
+        }
 
         res.status(201).json({ message: 'Event added successfully', event });
     } catch (error) {
@@ -93,6 +93,7 @@ app.post('/events', async (req, res) => {
     }
 });
 
+    
 
 
 
