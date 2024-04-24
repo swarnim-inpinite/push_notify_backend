@@ -85,6 +85,8 @@ app.post('/events', async (req, res) => {
                 console.error('Error: FCM token is missing for user:', userInfo.email);
                 return;
             }
+
+            
  
             const message = {
                 notification: {
@@ -97,9 +99,9 @@ app.post('/events', async (req, res) => {
            
            
             try {
-                console.log('Notification title:', message.notification.title);
-                console.log('Notification body:', message.notification.body);
-                await admin.messaging().send(message);
+            //     console.log('Notification title:', message.notification.title);
+            //     console.log('Notification body:', message.notification.body);
+                await admin.messaging().send(message.notification.title);
                
                 console.log('Successfully sent message to user:', userInfo.email);
             } catch (error) {
