@@ -103,6 +103,7 @@ app.post('/events', async (req, res) => {
         });
  
         res.status(201).json({ message: 'Event added successfully', event });
+        console.log("Event added is", event);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
