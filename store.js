@@ -78,10 +78,11 @@ async function sendPushNotifications(usersInfo) {
         try {
             await admin.messaging().send({
                 token: userToken,
-                notification: message.notification
+                notification: message.notification.body
             });
             console.log('Successfully sent message to user:', userInfo.email);
             console.log('message to user:', message.notification.title);
+            console.log('message to user:', message.notification.body);
         } catch (error) {
             console.error('Error sending message to user:', userInfo.email, error);
         }
