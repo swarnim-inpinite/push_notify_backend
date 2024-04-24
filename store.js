@@ -74,20 +74,12 @@ async function sendPushNotifications(usersInfo) {
             body: 'A new event has been added!'
         };
 
-        try {
-            await admin.messaging().send({
-                token: userToken,
-                notification: message
-            });
-            console.log('Successfully sent message to user:', userInfo.email);
-            console.log('Message to user:', message);
-            notifications.push(message); // Push the message object to the array
-        } catch (error) {
-            console.error('Error sending message to user:', userInfo.email, error);
-        }
+        console.log('Message to user:', message);
+        notifications.push(message); // Push the message object to the array
     }
     return notifications; // Return the array of message objects
 }
+
 
 
 
