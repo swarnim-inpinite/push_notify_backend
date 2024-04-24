@@ -59,6 +59,7 @@ app.post('/users', async (req, res) => {
 
 // Define a function to send push notifications
 async function sendPushNotifications(usersInfo) {
+    const notifications = []; // Array to store message objects
     for (const userInfo of usersInfo) {
         const userToken = userInfo.pushNotificationToken;
         console.log("User token in store is", userToken);
@@ -69,24 +70,23 @@ async function sendPushNotifications(usersInfo) {
         }
 
         const message = {
-            notification: {
-                title: 'New Event Notification',
-                body: 'A new event has been added!'
-            }
+            title: 'New Event Notification',
+            body: 'A new event has been added!'
         };
 
         try {
             await admin.messaging().send({
                 token: userToken,
-                notification: message.notification.body
+                notification: message
             });
             console.log('Successfully sent message to user:', userInfo.email);
-            console.log('message to user:', message.notification.title);
-            console.log('message to user:', message.notification.body);
+            console.log('Message to user:', message);
+            notifications.push(message); // Push the message object to the array
         } catch (error) {
             console.error('Error sending message to user:', userInfo.email, error);
         }
     }
+    return notifications; // Return the array of message objects
 }
 
 
