@@ -93,9 +93,14 @@ app.post('/events', async (req, res) => {
                 },
                 token: userToken
             };
- 
+
+           
+           
             try {
+                console.log('Notification title:', message.notification.title);
+                console.log('Notification body:', message.notification.body);
                 await admin.messaging().send(message);
+               
                 console.log('Successfully sent message to user:', userInfo.email);
             } catch (error) {
                 console.error('Error sending message to user:', userInfo.email, error);
@@ -103,7 +108,7 @@ app.post('/events', async (req, res) => {
         });
  
         res.status(201).json({ message: 'Event added successfully', event });
-        console.log("Event added is", event);
+        
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
