@@ -92,7 +92,7 @@ app.post('/events', async (req, res) => {
                     title: 'New Event Notification',
                     body: 'A new event has been added!'
                 },
-               
+                token: userToken
             };
 
            
