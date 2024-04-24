@@ -72,18 +72,22 @@ async function sendPushNotifications(usersInfo) {
             notification: {
                 title: 'New Event Notification',
                 body: 'A new event has been added!'
-            },
-            token: userToken
+            }
         };
 
         try {
-            await admin.messaging().send(message);
+            await admin.messaging().send({
+                token: userToken,
+                notification: message.notification
+            });
             console.log('Successfully sent message to user:', userInfo.email);
+            console.log('message to user:', message.notification.title);
         } catch (error) {
             console.error('Error sending message to user:', userInfo.email, error);
         }
     }
 }
+
 
 
 // Route to create a new event
