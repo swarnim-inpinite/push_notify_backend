@@ -16,7 +16,7 @@ connectDB();
 
 require('dotenv').config();
 
-app.use(cors()); 
+app.use(cors()); kk
 
 const serviceAccount = {
     "type": process.env.TYPE,
