@@ -76,7 +76,6 @@ async function sendPushNotifications(usersInfo) {
         try {
             await admin.messaging().send(message);
             console.log('Successfully sent message to user:', userInfo.email);
-            alert("Successfully sent notification");
             console.log('message to user:', message.notification.title);
         } catch (error) {
             console.error('Error sending message to user:', userInfo.email, error);
