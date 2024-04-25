@@ -17,11 +17,9 @@ connectDB();
 require('dotenv').config();
 
 app.use(cors({
-    origin: '*',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: 'https://push-notify-frontend.vercel.app/',
+    optionsSuccessStatus: 200
 }));
-
-
 
 const serviceAccount = {
     "type": process.env.TYPE,
