@@ -16,10 +16,11 @@ connectDB();
 
 require('dotenv').config();
 
-app.use(cors({
-    origin: 'https://push-notify-frontend.vercel.app',
-    optionsSuccessStatus: 200
-}));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+  });
 
 const serviceAccount = {
     "type": process.env.TYPE,
