@@ -17,7 +17,7 @@ connectDB();
 require('dotenv').config();
 
 app.use(cors({
-    origin: 'https://push-notify-frontend.vercel.app/',
+    origin: 'https://push-notify-frontend.vercel.app',
     optionsSuccessStatus: 200
 }));
 
