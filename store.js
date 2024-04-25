@@ -16,7 +16,11 @@ connectDB();
 
 require('dotenv').config();
 
-app.use(cors()); kk
+app.use(cors({
+    origin: '*',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
+
 
 const serviceAccount = {
     "type": process.env.TYPE,
