@@ -16,9 +16,6 @@ connectDB();
 
 require('dotenv').config();
 
-
-
-
 app.use(cors()); 
 
 const serviceAccount = {
@@ -59,25 +56,32 @@ app.post('/users', async (req, res) => {
 
 // Define a function to send push notifications
 async function sendPushNotifications(usersInfo) {
-    const notifications = []; // Array to store message objects
     for (const userInfo of usersInfo) {
         const userToken = userInfo.pushNotificationToken;
         console.log("User token in store is", userToken);
-
+ 
         if (!userToken) {
             console.error('Error: FCM token is missing for user:', userInfo.email);
             continue;
         }
-
+ 
         const message = {
-            title: 'New Event Notification',
-            body: 'A new event has been added!'
+            notification: {
+                title: 'New Event Notification',
+                body: 'A new event has been added!'
+            },
+            token: userToken
         };
-
-        console.log('Message to user:', message);
-        notifications.push(message); // Push the message object to the array
+ 
+        try {
+            await admin.messaging().send(message);
+            console.log('Successfully sent message to user:', userInfo.email);
+            alert("Successfully sent notification");
+            console.log('message to user:', message.notification.title);
+        } catch (error) {
+            console.error('Error sending message to user:', userInfo.email, error);
+        }
     }
-    return notifications; // Return the array of message objects
 }
 
 
